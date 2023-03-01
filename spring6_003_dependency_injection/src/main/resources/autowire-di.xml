@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+
+    <!--根据类型进行自动装配-->
+    <!--自动装配是基于set方法的-->
+    <!--根据类型进行自动装配的时候，在有效的配置文件当中，某种类型的实例只能有一个。-->
+    <bean class="com.shaluy.spring6.dao.VipDao"></bean>
+    <bean id="x" class="com.shaluy.spring6.dao.UserDao"/>
+    <!--<bean id="y" class="com.shaluy.spring6.dao.UserDao"/>-->
+    <bean id="csBean" class="com.shaluy.spring6.service.CustomerService" autowire="byType"/>
+
+
+    <!--根据名字进行自动装配-->
+    <!--注意：自动装配也是基于set方式实现的。-->
+    <bean id="orderServiceBean" class="com.shaluy.spring6.service.OrderService" autowire="byName"/>
+
+    <!--id一般也叫作bean的名称。-->
+    <!--根据名字进行自动装配的时候，被注入的对象的bean的id不能随便写，怎么写？set方法的方法名去掉set，剩下单词首字母小写。-->
+    <bean id="orderDao" class="com.shaluy.spring6.dao.OrderDao"/>
+</beans>

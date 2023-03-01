@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cache="http://www.springframework.org/schema/cache"
+       xmlns:lang="http://www.springframework.org/schema/lang"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd http://www.springframework.org/schema/lang http://www.springframework.org/schema/lang/spring-lang.xsd">
+
+    <bean id="orderDaoBean" class="com.shaluy.spring6.dao.OrderDao"/>
+    <!--注入外部Bean-->
+    <bean id="orderServiceBean" class="com.shaluy.spring6.service.OrderService">
+        <!--使用ref属性来引入。这就是注入外部Bean-->
+        <property name="orderDao" ref="orderDaoBean"/>
+    </bean>
+    <!--注入内部Bean-->
+    <bean id="orderServiceBean2" class="com.shaluy.spring6.service.OrderService">
+        <property name="orderDao">
+            <!--在property标签中使用嵌套的bean标签，这就是内部Bean-->
+            <bean class="com.shaluy.spring6.dao.OrderDao"/>
+        </property>
+    </bean>
+
+    <!--注入简单类型-->
+    <bean id="userBean" class="com.shaluy.spring6.bean.User">
+        <!--重点：如果是给简单类型赋值，就不能使用ref了。就需要使用value了。-->
+        <property name="username" value="张三"/>
+        <property name="password" value="123"/>
+        <property name="age" value="23"/>
+    </bean>
+
+    <!--测试哪些类型是简单类型-->
+    <bean id="svt" class="com.shaluy.spring6.bean.SimpleValueType">
+        <property name="age" value="24"/>
+        <property name="age2" value="25"/>
+        <property name="flag" value="true"/>
+        <property name="flag2" value="false"/>
+        <property name="c" value="张"/>
+        <property name="c2" value="三"/>
+        <property name="username" value="李四"/>
+        <property name="season" value="SPRING"/>
+        <property name="clazz" value="java.lang.String"/>
+        <!--报错了，说1970-10-11这个字符串无法转换成java.util.Date类型。-->
+        <!--<property name="date" value="1970-10-11"/>-->
+        <!--如果你硬要把Date当做简单类型的话，使用value赋值的话，这个日期字符串格式有要求-->
+        <property name="date" value="Wed Oct 19 16:28:13 CST 2022"/>
+        <!--在实际开发中，我们一般不会把Date当做简单类型，虽然它是简单类型。一般会采用ref给Date类型的属性赋值。-->
+    </bean>
+
+    <!--注入简单类型的一个方面的应用-->
+    <!--让spring来管理我们的数据源-->
+    <bean id="myDataSource" class="com.shaluy.spring6.jdbc.MyDataSource">
+        <property name="driver" value="com.mysql.cj.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql://localhost:3306/spring6"/>
+        <property name="username" value="root"/>
+        <property name="password" value="1234"/>
+    </bean>
+
+
+    <!--使用级联属性赋值需要注意两点：
+            1. 配置的顺序不能颠倒，必须如下顺序。
+            2. clazz属性必须提供getter方法。
+    -->
+    <bean id="studentBean" class="com.shaluy.spring6.bean.Student">
+        <!--简单类型，使用value-->
+        <property name="name" value="张三"/>
+        <!--这不是简单类型，使用ref-->
+        <property name="clazz" ref="clazzBean"/>
+        <!--级联属性赋值-->
+        <property name="clazz.name" value="高三二班"/>
+    </bean>
+    <bean id="clazzBean" class="com.shaluy.spring6.bean.Clazz"></bean>
+
+    <!--数组注入-->
+    <bean id="Woman1" class="com.shaluy.spring6.bean.Woman">
+        <property name="name" value="身材女"/>
+    </bean>
+    <bean id="Woman2" class="com.shaluy.spring6.bean.Woman">
+        <property name="name" value="相貌女"/>
+    </bean>
+    <bean id="Woman3" class="com.shaluy.spring6.bean.Woman">
+        <property name="name" value="金钱女"/>
+    </bean>
+    <bean id="qianDaYeBean" class="com.shaluy.spring6.bean.QianDaYe">
+        <property name="aiHaos">
+            <!-- 这个数组属性当中的元素类型是String简单类型 -->
+            <array>
+                <value>抽烟</value>
+                <value>喝酒</value>
+                <value>烫头</value>
+            </array>
+        </property>
+        <property name="women">
+            <!-- 这个数组当中的类型就不是简单类型了-->
+            <array>
+                <ref bean="Woman1"/>
+                <ref bean="Woman2"/>
+                <ref bean="Woman3"/>
+            </array>
+        </property>
+    </bean>
+
+    <!--set list map properties集合注入-->
+    <bean id="personBean" class="com.shaluy.spring6.bean.Person">
+        <property name="onlineNames">
+            <!--list集合有序可重复-->
+            <!--如元素不是简单类型就用这个配置。-->
+            <!--<ref bean=""/>-->
+            <list>
+                <value>飘香的温柔</value>
+                <value>大海</value>
+                <value>蜘蛛侠</value>
+                <value>忘了她</value>
+                <value>沉默的大帝</value>
+                <value>沉默的大帝</value>
+                <value>沉默的大帝</value>
+            </list>
+        </property>
+        <property name="address">
+            <!--set集合无序不可重复-->
+            <set>
+                <value>上海嘉定区</value>
+                <value>上海宝山区</value>
+                <value>上海徐汇区</value>
+                <value>上海静安区</value>
+                <value>上海浦东区</value>
+                <value>上海浦东区</value>
+                <value>上海浦东区</value>
+            </set>
+        </property>
+        <property name="phone">
+            <!--注入Map集合-->
+            <map>
+                <!--如果key和value不是简单类型就用这个配置。-->
+                <!--<entry key-ref="" value-ref=""/>-->
+                <!--如果是简单类型就是key和value-->
+                <entry key="1" value="110"/>
+                <entry key="2" value="120"/>
+                <entry key="3" value="119"/>
+            </map>
+        </property>
+        <property name="properties">
+            <!--注入Properties属性类对象-->
+            <props>
+                <prop key="driver">com.mysql.cj.jdbc.Driver</prop>
+                <prop key="url">jdbc:mysql://localhost:3306/spring6</prop>
+                <prop key="username">root</prop>
+                <prop key="password">123456</prop>
+            </props>
+        </property>
+    </bean>
+
+    <!--注入null或空字符串-->
+    <bean id="catBean" class="com.shaluy.spring6.bean.Cat">
+        <!--不给属性注入，属性的默认值就是null-->
+        <!-- 这不是注入null，这只是注入了一个"null"字符串-->
+        <!--<property name="name" value="null"/>-->
+
+        <!--这种方式是手动注入null-->
+        <!--<property name="name">
+            <null/>
+        </property>-->
+
+        <!--注入空字符串第一种方式-->
+        <!--<property name="name" value=""/>-->
+        <!--注入空字符串第二种方式-->
+        <!--<property name="name">
+            <value/>
+        </property>-->
+        <property name="name" value="tom"/>
+        <property name="age" value="3"/>
+    </bean>
+
+    <!--特殊符号注入-->
+    <bean id="mathBean" class="com.shaluy.spring6.bean.Math">
+        <!--<property name="result" value="2<3"/>错误的写法-->
+        <!--第一种方案：使用实体符号代替特殊符号-->
+        <!--<property name="result" value="2 &lt; 3"/>-->
+        <!--第二种方案：使用<![CDATA[]]>-->
+        <property name="result">
+            <value><![CDATA[2<3]]></value>
+        </property>
+    </bean>
+
+</beans>

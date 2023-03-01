@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:c="http://www.springframework.org/schema/c"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="data" class="java.util.Date"/>
+
+    <!--
+        c命名空间是简化构造注入的。
+        c命名空间注入办法是基于构造方法的。
+    -->
+    <!--
+        第一步：在spring的配置文件头部添加: xmlns:c="http://www.springframework.org/schema/c"
+        第二步：使用
+            c:_0 下标方式
+            c:name 参数名方式
+    -->
+    <bean id="dogBean" class="com.shaluy.spring6.bean.Dog" c:_0="小花" c:age="3" c:birth-ref="data"/>
+</beans>
